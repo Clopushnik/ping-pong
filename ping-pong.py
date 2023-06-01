@@ -9,55 +9,90 @@ win_height = 500
 img_back = 'purple.png' #картинка заданего фона
 img_ball = 'ball.png' #картинка мячика
 
-#название окна
-display.set_caption("Ping-Pong")
-
 #создание окна
 window = display.set_mode((win_width, win_height))
 background = transform.scale(image.load(img_back), (win_width, win_height))
 
-#флаг окончиния цикла
-game_over = False 
+#название окна
+display.set_caption("Ping-Pong")
+
+ball_x = 10
+ball_y = 10
+
+#флаги
+game_over = False #флаг окончиния цикла
+finish = False #флаг окончания игры
 
 #класс игрока 
 class GameSprite(sprite.Sprite):
-   def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
+    def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
        sprite.Sprite.__init__(self)
- 
- 
-       
+
        self.image = transform.scale(image.load(player_image), (size_x, size_y))
        self.speed = player_speed
- 
- 
-       
+
        self.rect = self.image.get_rect()
        self.rect.x = player_x
        self.rect.y = player_y
-   def reset(self):
+    def reset(self):
        window.blit(self.image, (self.rect.x, self.rect.y))
  
  
 
 class Player(GameSprite):
-   def update(self):
-       keys = key.get_pressed()
-       if keys[K_LEFT] and self.rect.x > 5:
-           self.rect.x -= self.speed
-       if keys[K_RIGHT] and self.rect.x < win_width - 80:
-           self.rect.x += self.speed
+    def player_move_two(self):
+        keys = key.get_pressed()
+        if keys[K_UP] and self.rect.y > 10:
+           self.rect.y -= self.speed
+        if keys[K_DOWN] and self.rect.y < win_height - 160:
+           self.rect.y += self.speed
 
-class Ball():
+    def player_move_one(self):
+        keys = key.get_pressed()
+        if keys[K_w] and self.rect.y > 10:
+           self.rect.y -= self.speed
+        if keys[K_s] and self.rect.y < win_height - 160:
+           self.rect.y += self.speed
+
+class Ball(GameSprite):
     pass
 
 #Экземпляры класса
-#player_one = Player()#игрок 1
-#player_two = Player()#игрок 2
-#ball = Ball()#мячик
+player_one = Player('plin.png',50,100,40,150,10)#игрок 1
+player_two = Player('plin.png',910,100,40,150,10)#игрок 2
+ball = Ball('ball.png',450,250,40,40,None)#мячик
 
-#мгровой цикл
+#игровой цикл
 while not game_over:
+    
+    for e in event.get():
+       if e.type == QUIT:
+           game_over = True  
+    
+    #if not finish: 
     window.blit(background,(0,0))
-    display.update()
 
-time.delay(50)
+    #Отрисовка и управление платфорами
+    player_one.player_move_one()
+    player_one.reset()
+
+    player_two.player_move_two()
+    player_two.reset()
+
+    ball.reset()
+
+    ball.rect.x += ball_x
+    ball.rect.y += ball_y
+
+
+    if ball.rect.y > 460 or ball.rect.y < 0:
+        ball_y *= -1
+
+    if ball.rect.colliderect(player_one.rect):
+        ball_x *= -1
+    
+    if ball.rect.colliderect(player_two.rect):
+        ball_x *= -1
+    
+    display.update()
+    time.delay(50)
