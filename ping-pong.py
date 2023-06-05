@@ -67,7 +67,7 @@ class Player(GameSprite):
 #Экземпляры класса
 player_one = Player(img_player1,50,100,34,174,10)#игрок 1
 player_two = Player(img_player2,910,100,34,174,10)#игрок 2
-ball1 = Player(img_ball,450,250,40,40,None)#мячик
+ball = Player(img_ball,450,250,40,40,None)#мячик
 
 #игровой цикл
 while not game_over:
